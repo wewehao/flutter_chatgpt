@@ -1,47 +1,37 @@
 ## ChatGPT Application with flutter
 
-ChatGPT发布了4.0版本，但未完全开放，目前AI Chat使用'gpt-3.5-turbo'模型。
+ChatGPT发布了4.0版本，但未完全开放，目前AI Chat使用`gpt-3.5-turbo`模型。
 
 ### 软件截图
 
 #### 纯净版本(无广告)
 
-<div>
-<img src="./docs/1.jpeg" style="max-width:30%;margin-right:10px;" />
-<img src="./docs/2.jpeg" style="max-width:30%;margin-right:10px;" />
-<img src="./docs/2_1.jpeg" style="max-width:30%;" />
+<div align=left>
+<img src="./docs/1.jpeg" width="33%" /><img src="./docs/2.jpeg" width="33%" /><img src="./docs/2_1.jpeg" width="33%" />
 </div>
 
-<div>
-<img src="./docs/3.jpeg" style="max-width:30%;margin-right:10px;" />
-<img src="./docs/3_1.jpeg" style="max-width:30%;margin-right:10px;" />
-<img src="./docs/3_2.jpeg" style="max-width:30%;" />
+<div align=left>
+<img src="./docs/3.jpeg" width="33%" /><img src="./docs/3_1.jpeg" width="33%" /><img src="./docs/3_2.jpeg" width="33%" />
 </div>
 
-<div>
-<img src="./docs/4.jpeg" style="max-width:30%;margin-right:10px;" />
-<img src="./docs/5.jpeg" style="max-width:30%;margin-right:10px;" />
-<img src="./docs/6.jpeg" style="max-width:30%;" />
+<div align=left>
+<img src="./docs/4.jpeg" width="33%" /><img src="./docs/5.jpeg" width="33%" /><img src="./docs/6.jpeg" width="33%" />
 </div>
 
 #### 广告版本
 
-<div>
-<img src="./docs/ad_1.jpeg" style="max-width:30%;margin-right:10px;" />
-<img src="./docs/ad_2.jpeg" style="max-width:30%;margin-right:10px;" />
-<img src="./docs/ad_3.jpeg" style="max-width:30%;" />
+<div align=left>
+<img src="./docs/ad_1.jpeg" width="33%" /><img src="./docs/ad_2.jpeg" width="33%" /><img src="./docs/ad_3.jpeg" width="33%" />
 </div>
 
-<div>
-<img src="./docs/ad_1.jpeg" style="max-width:30%;margin-right:10px;" />
-<img src="./docs/ad_2.jpeg" style="max-width:30%;margin-right:10px;" />
-<img src="./docs/ad_4.jpeg" style="max-width:30%;" />
+<div align=left>
+<img src="./docs/ad_4.jpeg" width="33%" />
 </div>
 
 #### IOS模拟器运行
 
-<div>
-<img src="./docs/ios_1.png" style="max-width:30%;margin-right:10px;" />
+<div align=left>
+<img src="./docs/ios_1.png" width="33%" />
 </div>
 
 ### 软件版本
