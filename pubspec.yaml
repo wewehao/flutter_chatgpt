@@ -26,6 +26,9 @@ dependencies:
   rating_dialog: ^2.0.4
   lottie: ^2.2.0
   provider: ^6.0.5
+  google_mobile_ads: ^2.3.0
+  firebase_core: ^2.7.1
+  firebase_crashlytics: ^3.0.16
   flutter_tts: ^3.6.3
 
 dev_dependencies:

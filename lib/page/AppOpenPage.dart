@@ -1,9 +1,16 @@
 import 'dart:async';
+import 'package:aichat/stores/AIChatStore.dart';
+import 'package:aichat/utils/AdCommon.dart';
 import 'package:aichat/utils/Utils.dart';
+import 'package:aichat/utils/OpenAppAd.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:aichat/page/HomePage.dart';
+import 'package:provider/provider.dart';
 import '../utils/Config.dart';
+
+const int maxCheckTime = 8; // Maximum detection time
+int startCheckTime = 0;
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -15,9 +22,11 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   late LottieBuilder _splashLottie;
   late AnimationController _lottieController;
+  int currentTimeMillis = -1;
 
   bool _showAppOpenAnimate = true;
   bool _isAnimateFileLoaded = false; // lottie json loaded state
+  late OpenAppAd _openAppAd;
 
   Timer? _timer;
 
@@ -25,7 +34,22 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
+    startCheckTime = DateTime.now().millisecondsSinceEpoch;
+    _checkFirstInstall();
+
+    /// Initialize the open screen AD
+    print('---openAppAdId---$openAppAdId');
+    _openAppAd = getOpenAppAdInstance(openAppAdId);
     _lottieInit();
+  }
+
+  Future _checkFirstInstall() async {
+    final store = Provider.of<AIChatStore>(context, listen: false);
+    bool isInstall = await Utils.getInstall();
+    Utils.saveInstall();
+    if (!isInstall) {
+      store.addApiCount(Config.watchAdApiCount);
+    }
   }
 
   void _lottieInit() {
@@ -35,9 +59,15 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     );
     _lottieController.addStatusListener((status) async {
       if (status == AnimationStatus.completed) {
-        _lottieController.stop();
-        _showAppOpenAnimate = false;
-        Utils.pushReplacement(context, const HomePage());
+        _lottieController.forward(from: 0);
+        _checkOpenAdLoadStatus(() {
+          _lottieController.stop();
+          _showAppOpenAnimate = false;
+          _openAppAd.showOpenAppAd(() {
+            print('---AppOpenAd show success---');
+            Utils.pushReplacement(context, const HomePage());
+          });
+        });
       }
     });
     _splashLottie = Lottie.asset(
@@ -106,5 +136,41 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     }
 
     super.dispose();
+  }
+
+  void _checkOpenAdLoadStatus(Function callback) async {
+    if (!Config.isAdShow()) {
+      callback();
+      return;
+    }
+    if (_openAppAd.isLoadFail) {
+      print('---AppOpenAd -_checkOpenAdLoadStatus isLoadFail--');
+      callback();
+      return;
+    }
+    _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+      int now = DateTime.now().millisecondsSinceEpoch;
+      if (now - startCheckTime > maxCheckTime * 1000 || _openAppAd.isLoadFail) {
+        _lottieController.stop();
+        _lottieController.value = 1;
+        setState(() {});
+        _timer?.cancel();
+        _timer = null;
+        timer.cancel();
+        print('---AppOpenAd -_checkOpenAdLoadStatus delayed callback--');
+        callback();
+        return;
+      }
+      if (_openAppAd.isAdAvailable) {
+        _lottieController.stop();
+        _lottieController.value = 1;
+        setState(() {});
+        _timer?.cancel();
+        _timer = null;
+        timer.cancel();
+        print('---AppOpenAd -_checkOpenAdLoadStatus isAdAvailable delayed callback--');
+        callback();
+      }
+    });
   }
 }

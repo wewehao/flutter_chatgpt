@@ -1,12 +1,17 @@
 import 'package:aichat/utils/Chatgpt.dart';
+import 'package:aichat/utils/Config.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:uuid/uuid.dart';
 
 class AIChatStore extends ChangeNotifier {
   AIChatStore() {
     syncStorage();
   }
 
+  String apiKey = 'apiCount';
   String chatListKey = 'chatList';
+
+  int apiCount = 0; /// Remaining number of API calls
 /*
 chat
 {
@@ -42,6 +47,33 @@ chat
 
   get homeHistoryList {
     return sortChatList.take(2).toList();
+  }
+
+  get hasApiCount {
+    if (Config.isInfiniteNumberVersion) {
+      return true;
+    }
+
+    if (apiCount <= 0) {
+      return false;
+    }
+
+    return true;
+  }
+
+  Future addApiCount(int count) async {
+    apiCount = apiCount + count;
+    await ChatGPT.storage.write(apiKey, apiCount);
+    notifyListeners();
+  }
+
+  Future delApiCount(int count) async {
+    apiCount = apiCount - count;
+    if (apiCount <= 0) {
+      apiCount = 0;
+    }
+    await ChatGPT.storage.write(apiKey, apiCount);
+    notifyListeners();
   }
 
   Map _createChat(String aiType, String chatId) {
@@ -80,8 +112,9 @@ chat
   }
 
   void syncStorage() {
+    apiCount = ChatGPT.storage.read(apiKey) ?? 0;
     chatList = ChatGPT.storage.read(chatListKey) ?? [];
-    debugPrint('---syncStorage success---');
+    debugPrint('---syncStorage success $apiCount---');
     notifyListeners();
   }
 

@@ -28,7 +28,7 @@ class Config {
     return true;
   }
 
-  static bool isInfiniteNumberVersion = true; // Unlimited frequency. Development and use
+  static bool isInfiniteNumberVersion = false; // Unlimited frequency. Development and use
   static String appName = 'AI Chat';
   static String contactEmail = '895535702@qq.com';
   static int watchAdApiCount = 3;

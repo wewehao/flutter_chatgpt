@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'package:aichat/utils/Chatgpt.dart';
 import 'package:aichat/utils/Config.dart';
 import 'package:aichat/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:rating_dialog/rating_dialog.dart';
 import 'package:sp_util/sp_util.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -213,6 +215,36 @@ class _SettingPageState extends State<SettingPage> with WidgetsBindingObserver {
                         store.syncStorage();
                         SpUtil.clear();
                         EasyLoading.showToast('Clear Storage Success!');
+                      },
+                    ),
+
+                  /// Number of additions
+                  if (Config.isDebug)
+                    renderItemWidget(
+                      'images/debug_icon.png',
+                      Colors.lightBlue,
+                      22,
+                      'Debug: Add Times',
+                      () {
+                        final store = Provider.of<AIChatStore>(context, listen: false);
+                        store.addApiCount(Config.watchAdApiCount);
+                        EasyLoading.showToast('Add ApiCount ${Config.watchAdApiCount} Times Success!');
+                      },
+                    ),
+
+                  /// Forced crash test
+                  if (Config.isDebug)
+                    renderItemWidget(
+                      'images/debug_icon.png',
+                      Colors.red,
+                      22,
+                      'Debug: Forced Crash',
+                      () {
+                        EasyLoading.showToast(
+                          'Forces Crash Success!',
+                          dismissOnTap: true,
+                        );
+                        throw Exception();
                       },
                     ),
                 ],

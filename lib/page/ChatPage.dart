@@ -1,11 +1,15 @@
+import 'package:aichat/components/MyLimit.dart';
 import 'package:aichat/components/QuestionInput.dart';
 import 'package:aichat/utils/Chatgpt.dart';
 import 'package:aichat/utils/Config.dart';
+import 'package:aichat/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:aichat/stores/AIChatStore.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:aichat/utils/AdCommon.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -40,9 +44,61 @@ class _ChatPageState extends State<ChatPage> {
 
   bool _isCopying = false;
 
+  BannerAd? _bannerAd;
+  bool _bannerAdLoaded = false;
+  double _adWidth = 0;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _adWidth = MediaQuery.of(context).size.width;
+
+    // _loadAd(); // Leave out for the time being
+  }
+
+  void _loadAd() async {
+    if (!Config.isAdShow()) {
+      return;
+    }
+    final AnchoredAdaptiveBannerAdSize? size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+      _adWidth.truncate(),
+    );
+
+    if (size == null) {
+      print('Unable to get height of anchored banner.');
+      return;
+    }
+
+    _bannerAd = BannerAd(
+      adUnitId: homeBannerAd,
+      size: size,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+          print('BannerAd loaded: $homeBannerAd');
+          _bannerAdLoaded = true;
+          setState(() {});
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          print('BannerAd load fail: $error');
+          ad.dispose();
+        },
+      ),
+    );
+
+    _bannerAd!.load();
+  }
+
+  Widget _renderBannerAdWidget() {
+    if (_bannerAd != null && _bannerAdLoaded) {
+      return SizedBox(
+        width: _bannerAd!.size.width.toDouble(),
+        height: _bannerAd!.size.height.toDouble(),
+        child: AdWidget(ad: _bannerAd!),
+      );
+    } else {
+      return Container();
+    }
   }
 
   Future<void> initTts() async {
@@ -196,8 +252,9 @@ class _ChatPageState extends State<ChatPage> {
         ),
         backgroundColor: Colors.white,
         elevation: 0.5,
-        actions: const [
-          SizedBox(width: 20),
+        actions: [
+          if (Config.isAdShow() && store.apiCount < Config.appUserAdCount) const MyLimit(),
+          const SizedBox(width: 20),
         ],
       ),
       body: SafeArea(
@@ -208,6 +265,7 @@ class _ChatPageState extends State<ChatPage> {
                 chat['messages'],
               ),
             ),
+            _renderBannerAdWidget(),
             QuestionInput(
               key: globalQuestionInputKey,
               chat: chat,

@@ -1,6 +1,9 @@
+import 'package:aichat/components/WatchAdDialog.dart';
 import 'package:aichat/utils/Chatgpt.dart';
+import 'package:dart_openai/openai.dart';
 import 'package:flutter/material.dart';
 import 'package:aichat/stores/AIChatStore.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 GlobalKey<_QuestionInputState> globalQuestionInputKey = GlobalKey();
@@ -132,6 +135,22 @@ class _QuestionInputState extends State<QuestionInput> {
       print('---_isGenerating---');
       return;
     }
+    if (!store.hasApiCount) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return WatchAdDialog(
+            onClose: () {
+              Navigator.of(context).pop();
+            },
+          );
+        },
+      );
+      EasyLoading.showToast('No more times',
+        dismissOnTap: true,
+      );
+      return;
+    }
 
     final text = myQuestion;
 
@@ -150,6 +169,7 @@ class _QuestionInputState extends State<QuestionInput> {
     bool isFirstMessage = widget.chat['messages'].length == 0;
     debugPrint('---是否首次发消息 $isFirstMessage---');
     Map chat = await store.pushMessage(widget.chat, message);
+    await store.delApiCount(1);
 
     List messages = [
       chat['systemMessage'],

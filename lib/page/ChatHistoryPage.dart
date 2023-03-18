@@ -1,3 +1,4 @@
+import 'package:aichat/components/MyLimit.dart';
 import 'package:aichat/page/ChatPage.dart';
 import 'package:aichat/page/SettingPage.dart';
 import 'package:aichat/utils/Config.dart';
@@ -78,8 +79,9 @@ class _ChatHistoryPageState extends State<ChatHistoryPage> {
         ),
         backgroundColor: Colors.white,
         elevation: 0.5,
-        actions: const [
-          SizedBox(width: 8),
+        actions: [
+          if (Config.isAdShow() && store.apiCount < Config.appUserAdCount) const MyLimit(),
+          const SizedBox(width: 8),
         ],
       ),
       body: SafeArea(

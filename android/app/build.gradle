@@ -24,6 +24,8 @@ if (flutterVersionName == null) {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 33
@@ -51,31 +53,24 @@ android {
         versionName flutterVersionName
     }
 
-//    signingConfigs {
-//        release {
-//             storeFile file("./build_config/build.jks")
-//             storePassword "123456"
-//             keyAlias "key"
-//             keyPassword "123456"
-//        }
-//        debug {
-//            storeFile file("./build_config/build.jks")
-//            storePassword "123456"
-//            keyAlias "key"
-//            keyPassword "123456"
-//        }
-//    }
-    buildTypes {
-//        release {
-//            signingConfig signingConfigs.release
-//            minifyEnabled true
-//        }
-//        debug {
-//            signingConfig signingConfigs.debug
-//            minifyEnabled false
-//        }
+    signingConfigs {
         release {
-            signingConfig signingConfigs.debug
+            storeFile file("./build_config/build.jks")
+            storePassword "123456"
+            keyAlias "key"
+            keyPassword "123456"
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -85,5 +80,9 @@ flutter {
 }
 
 dependencies {
+    implementation 'com.google.android.gms:play-services-ads:21.5.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation platform('com.google.firebase:firebase-bom:31.2.3')
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-analytics'
 }

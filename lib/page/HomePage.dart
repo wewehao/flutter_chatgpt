@@ -1,16 +1,21 @@
+import 'package:aichat/components/MyLimit.dart';
 import 'package:aichat/components/QuestionInput.dart';
 import 'package:aichat/page/ChatHistoryPage.dart';
 import 'package:aichat/page/ChatPage.dart';
 import 'package:aichat/page/SettingPage.dart';
 import 'package:aichat/utils/Chatgpt.dart';
 import 'package:aichat/utils/Config.dart';
+import 'package:aichat/utils/InterstitialAdCreator.dart';
 import 'package:aichat/utils/Time.dart';
 import 'package:aichat/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:aichat/stores/AIChatStore.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:aichat/utils/AdCommon.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -22,9 +27,53 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   TextEditingController questionController = TextEditingController();
 
+  InterstitialAdCreator? _interstitialAdCreator;
+
+  BannerAd? _bannerAd;
+  bool _bannerAdLoaded = false;
+  double _adWidth = 0;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _adWidth = MediaQuery.of(context).size.width;
+
+    _loadAd();
+  }
+
+  void _loadAd() async {
+    if (!Config.isAdShow()) {
+      return;
+    }
+    final AnchoredAdaptiveBannerAdSize? size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+      _adWidth.truncate(),
+    );
+
+    if (size == null) {
+      print('Unable to get height of anchored banner.');
+      return;
+    }
+
+    _bannerAd = BannerAd(
+      adUnitId: homeBannerAd,
+      size: size,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+          print('BannerAd loaded: $homeBannerAd');
+          _bannerAdLoaded = true;
+          setState(() {});
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          print('BannerAd load fail: $error');
+          ad.dispose();
+        },
+      ),
+    );
+
+    _bannerAd!.load();
+
+    _interstitialAdCreator = getInterstitialAdInstance(taskAdId);
   }
 
   Widget _renderBottomInputWidget() {
@@ -41,6 +90,38 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _renderBannerAdWidget() {
+    if (_bannerAd != null && _bannerAdLoaded) {
+      return SizedBox(
+        width: _bannerAd!.size.width.toDouble(),
+        height: _bannerAd!.size.height.toDouble(),
+        child: AdWidget(ad: _bannerAd!),
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  Future _handleClickModel(Function callback) async {
+    if (!Config.isAdShow()) {
+      callback();
+      return;
+    }
+
+    EasyLoading.show(status: 'loading...');
+
+    _interstitialAdCreator?.showInterstitialAd(
+      failCallback: () {
+        callback();
+        EasyLoading.dismiss();
+      },
+      openCallback: () {
+        callback();
+        EasyLoading.dismiss();
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -49,19 +130,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     super.dispose();
-  }
-
-  void _handleClickModel(Map chatModel) {
-    final store = Provider.of<AIChatStore>(context, listen: false);
-    store.fixChatList();
-    Utils.jumpPage(
-      context,
-      ChatPage(
-        chatId: const Uuid().v4(),
-        autofocus: true,
-        chatType: chatModel['type'],
-      ),
-    );
+    _bannerAd?.dispose();
+    _interstitialAdCreator?.dispose();
   }
 
   void handleClickInput() async {
@@ -114,6 +184,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.white,
         elevation: 0.5,
         actions: [
+          if (Config.isAdShow() &&store.apiCount < Config.appUserAdCount) const MyLimit(),
           const SizedBox(width: 6),
           IconButton(
             icon: const Icon(Icons.settings),
@@ -130,6 +201,7 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Column(
           children: [
+            _renderBannerAdWidget(),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -234,7 +306,18 @@ class _HomePageState extends State<HomePage> {
       highlightColor: Colors.transparent,
       splashColor: Colors.transparent,
       onTap: () {
-        _handleClickModel(chatModel);
+        _handleClickModel(() {
+          final store = Provider.of<AIChatStore>(context, listen: false);
+          store.fixChatList();
+          Utils.jumpPage(
+            context,
+            ChatPage(
+              chatId: const Uuid().v4(),
+              autofocus: true,
+              chatType: chatModel['type'],
+            ),
+          );
+        });
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

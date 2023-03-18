@@ -47,10 +47,12 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-    <key>NSAllowsLocalNetworking</key>
-    <true/>
-	</dict>
+	<key>GADApplicationIdentifier</key>
+    <string>****</string>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsLocalNetworking</key>
+        <true/>
+    </dict>
 </dict>
 </plist>
