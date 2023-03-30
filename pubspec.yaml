@@ -1,41 +1,40 @@
 name: aichat
 description: aichat
 
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+2
 
 environment:
-  sdk: '>=2.18.6 <3.0.0'
+  sdk: ">=2.18.6 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.5
   flutter_markdown: ^0.6.14
   uuid: ^3.0.7
   http: ^0.13.5
   sp_util: ^2.0.3
-  shared_preferences: ^2.0.18
+  shared_preferences: ^2.0.20
   intl: ^0.18.0
-  dart_openai: ^1.8.0
+  dart_openai: ^1.9.1
   get_storage: ^2.1.1
   flutter_easyloading: ^3.0.5
   url_launcher: ^6.1.10
   share_plus: ^6.3.1
   rating_dialog: ^2.0.4
-  lottie: ^2.2.0
+  lottie: ^2.3.1
   provider: ^6.0.5
   flutter_tts: ^3.6.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^2.0.1
   build_runner: ^2.3.3
 
 flutter:
   uses-material-design: true
   assets:
     - images/
-
