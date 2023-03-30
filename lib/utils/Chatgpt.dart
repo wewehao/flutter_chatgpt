@@ -20,7 +20,11 @@ class ChatGPT {
 
   static String chatGptToken = ''; // token
   static String defaultModel = 'gpt-3.5-turbo';
-  static List defaultRoles = ['system', 'user', 'assistant']; // generating | error
+  static List defaultRoles = [
+    'system',
+    'user',
+    'assistant'
+  ]; // generating | error
 
   static List chatModelList = [
     {
@@ -83,7 +87,8 @@ class ChatGPT {
     {
       "type": "linuxTerminal",
       "name": "Act as a Linux Terminal",
-      "desc": "AI linux terminal. Enter the command and the AI will reply with what the terminal should display",
+      "desc":
+          "AI linux terminal. Enter the command and the AI will reply with what the terminal should display",
       "isContinuous": false,
       "content": "\nInstructions:"
           "\nI want you to act as a linux terminal. I will type commands and you will reply with what the terminal should show. I want you to only reply with the terminal output inside one unique code block, and nothing else. do not write explanations. do not type commands unless I instruct you to do so. When I need to tell you something in English, I will do so by putting text inside curly brackets {like this}."
@@ -97,7 +102,8 @@ class ChatGPT {
     {
       "type": "positionInterviewer",
       "name": "Act as position Interviewer",
-      "desc": "AI interviewer. As a candidate, AI will ask you interview questions for the position",
+      "desc":
+          "AI interviewer. As a candidate, AI will ask you interview questions for the position",
       "isContinuous": false,
       "content": "\nInstructions:"
           "\nI want you to act as an interviewer. I will be the candidate and you will ask me the interview questions for the position position. I want you to only reply as the interviewer. Do not write all the conservation at once. I want you to only do the interview with me. Ask me the questions and wait for my answers. Do not write explanations. Ask me the questions one by one like an interviewer does and wait for my answers."
@@ -141,7 +147,8 @@ class ChatGPT {
     {
       "type": "spokenEnglishTeacher",
       "name": "Act as a Spoken English Teacher and Improver",
-      "desc": "Talk to AI in English, AI will reply you in English to practice your English speaking",
+      "desc":
+          "Talk to AI in English, AI will reply you in English to practice your English speaking",
       "isContinuous": false,
       "content": "\nInstructions:"
           "\nI want you to act as a spoken English teacher and improver. I will speak to you in English and you will reply to me in English to practice my spoken English. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors."
@@ -154,7 +161,8 @@ class ChatGPT {
     {
       "type": "travelGuide",
       "name": "Act as a Travel Guide",
-      "desc": "Write down your location and AI will recommend attractions near you",
+      "desc":
+          "Write down your location and AI will recommend attractions near you",
       "isContinuous": false,
       "content": "\nInstructions:"
           "\nI want you to act as a travel guide. I will write you my location and you will suggest a place to visit near my location. In some cases, I will also give you the type of places I will visit. You will also suggest me places of similar type that are close to my first location."
@@ -167,7 +175,8 @@ class ChatGPT {
     {
       "type": "storyteller",
       "name": "Act as a Storyteller",
-      "desc": "AI will come up with interesting stories that are engaging, imaginative and captivating to the audience",
+      "desc":
+          "AI will come up with interesting stories that are engaging, imaginative and captivating to the audience",
       "isContinuous": false,
       "content": "\nInstructions:"
           "\nI want you to act as a storyteller. You will come up with entertaining stories that are engaging, imaginative and captivating for the audience. It can be fairy tales, educational stories or any other type of stories which has the potential to capture people's attention and imagination. Depending on the target audience, you may choose specific themes or topics for your storytelling session e.g., if it’s children then you can talk about animals; If it’s adults then history-based tales might engage them better etc. "
@@ -180,7 +189,8 @@ class ChatGPT {
     {
       "type": "novelist",
       "name": "Act as a Novelist",
-      "desc": "AI plays a novelist. You'll come up with creative and engaging stories",
+      "desc":
+          "AI plays a novelist. You'll come up with creative and engaging stories",
       "isContinuous": false,
       "content": "\nInstructions:"
           "\nI want you to act as a novelist. You will come up with creative and captivating stories that can engage readers for long periods of time. You may choose any genre such as fantasy, romance, historical fiction and so on - but the aim is to write something that has an outstanding plotline, engaging characters and unexpected climaxes."
@@ -219,7 +229,8 @@ class ChatGPT {
     return '';
   }
 
-  static Set chatModelTypeList = chatModelList.map((map) => map['type']).toSet();
+  static Set chatModelTypeList =
+      chatModelList.map((map) => map['type']).toSet();
 
   /// 实现通过type获取信息
   static getAiInfoByType(String chatType) {
@@ -234,11 +245,18 @@ class ChatGPT {
     OpenAI.apiKey = cacheKey != '' ? cacheKey : chatGptToken;
   }
 
+  static getRoleFromString(String role) {
+    if (role == "system") return OpenAIChatMessageRole.system;
+    if (role == "user") return OpenAIChatMessageRole.user;
+    if (role == "assistant") return OpenAIChatMessageRole.assistant;
+    return "unknown";
+  }
+
   static convertListToModel(List messages) {
     List<OpenAIChatCompletionChoiceMessageModel> modelMessages = [];
     for (var element in messages) {
       modelMessages.add(OpenAIChatCompletionChoiceMessageModel(
-        role: element["role"],
+        role: getRoleFromString(element["role"]),
         content: element["content"],
       ));
     }
@@ -290,8 +308,10 @@ class ChatGPT {
     String model = '',
   }) async {
     messages = filterMessageParams(messages);
-    List<OpenAIChatCompletionChoiceMessageModel> modelMessages = convertListToModel(messages);
-    OpenAIChatCompletionModel chatCompletion = await OpenAI.instance.chat.create(
+    List<OpenAIChatCompletionChoiceMessageModel> modelMessages =
+        convertListToModel(messages);
+    OpenAIChatCompletionModel chatCompletion =
+        await OpenAI.instance.chat.create(
       model: model != '' ? model : defaultModel,
       messages: modelMessages,
     );
@@ -304,9 +324,11 @@ class ChatGPT {
     Function? onProgress,
   }) async {
     messages = filterMessageParams(messages);
-    List<OpenAIChatCompletionChoiceMessageModel> modelMessages = convertListToModel(messages);
+    List<OpenAIChatCompletionChoiceMessageModel> modelMessages =
+        convertListToModel(messages);
 
-    Stream<OpenAIStreamChatCompletionModel> chatStream = OpenAI.instance.chat.createStream(
+    Stream<OpenAIStreamChatCompletionModel> chatStream =
+        OpenAI.instance.chat.createStream(
       model: defaultModel,
       messages: modelMessages,
     );
@@ -328,7 +350,7 @@ class ChatGPT {
       prompt: imageDesc,
       n: 1,
       size: OpenAIImageSize.size1024,
-      responseFormat: OpenAIResponseFormat.url,
+      responseFormat: OpenAIImageResponseFormat.url,
     );
     debugPrint('---genImage success: $image---');
     return image;
