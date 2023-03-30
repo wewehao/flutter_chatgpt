@@ -1,6 +1,7 @@
 import 'package:dart_openai/openai.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ChatGPT {
   static ChatGPT _instance = ChatGPT._();
@@ -18,7 +19,8 @@ class ChatGPT {
 
   static GetStorage storage = GetStorage();
 
-  static String chatGptToken = ''; // token
+  static String chatGptToken =
+      dotenv.env['OPENAI_CHATGPT_TOKEN'] ?? ''; // token
   static String defaultModel = 'gpt-3.5-turbo';
   static List defaultRoles = [
     'system',
