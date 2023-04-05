@@ -1,19 +1,18 @@
 import 'package:dart_openai/openai.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_storage/get_storage.dart';
 
 class ChatGPT {
-  static ChatGPT _instance = ChatGPT._();
+  static final ChatGPT _instance = ChatGPT._();
 
   factory ChatGPT() => _getInstance();
 
   static ChatGPT get instance => _getInstance();
 
-  ChatGPT._() {}
+  ChatGPT._();
 
   static ChatGPT _getInstance() {
-    _instance ??= ChatGPT._();
     return _instance;
   }
 
@@ -231,6 +230,16 @@ class ChatGPT {
     return '';
   }
 
+  static Future<void> setOpenAIBaseUrl(String url) async {
+    await storage.write('OpenAIBaseUrl', url);
+    await initChatGPT();
+  }
+
+  static String getCacheOpenAIBaseUrl() {
+    String? key = storage.read('OpenAIBaseUrl');
+    return (key ?? "").isEmpty ? "" : key!;
+  }
+
   static Set chatModelTypeList =
       chatModelList.map((map) => map['type']).toSet();
 
@@ -244,7 +253,13 @@ class ChatGPT {
 
   static Future<void> initChatGPT() async {
     String cacheKey = getCacheOpenAIKey();
-    OpenAI.apiKey = cacheKey != '' ? cacheKey : chatGptToken;
+    String cacheUrl = getCacheOpenAIBaseUrl();
+    var apiKey = cacheKey != '' ? cacheKey : chatGptToken;
+    OpenAI.apiKey = apiKey;
+    if (apiKey != chatGptToken) {
+      OpenAI.baseUrl =
+          cacheUrl.isNotEmpty ? cacheUrl : "https://api.openai.com";
+    }
   }
 
   static getRoleFromString(String role) {
