@@ -19,10 +19,8 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> with WidgetsBindingObserver {
   bool isCopying = false;
-  final TextEditingController _keyTextEditingController =
-      TextEditingController();
-  final TextEditingController _urlTextEditingController =
-      TextEditingController();
+  final TextEditingController _keyTextEditingController = TextEditingController();
+  final TextEditingController _urlTextEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -68,10 +66,10 @@ class _SettingPageState extends State<SettingPage> with WidgetsBindingObserver {
               onTap: () {
                 Navigator.pop(context);
               },
-              child: const SizedBox(
+              child: SizedBox(
                 height: 60,
                 child: Row(
-                  children: [
+                  children: const [
                     SizedBox(width: 24),
                     Image(
                       width: 18,
@@ -111,8 +109,7 @@ class _SettingPageState extends State<SettingPage> with WidgetsBindingObserver {
                     32,
                     'Privacy Policy',
                     () {
-                      final Uri url = Uri.parse(
-                          'https://wewehao.github.io/Privacy/privacy.html');
+                      final Uri url = Uri.parse('https://wewehao.github.io/Privacy/privacy.html');
                       Utils.launchURL(url);
                     },
                   ),
@@ -163,8 +160,7 @@ class _SettingPageState extends State<SettingPage> with WidgetsBindingObserver {
                           commentHint: 'Set your custom comment hint',
                           onCancelled: () => print('cancelled'),
                           onSubmitted: (response) {
-                            print(
-                                'rating: ${response.rating}, comment: ${response.comment}');
+                            print('rating: ${response.rating}, comment: ${response.comment}');
                           },
                         ),
                       );
@@ -179,14 +175,12 @@ class _SettingPageState extends State<SettingPage> with WidgetsBindingObserver {
                       String recipientEmail = Config.contactEmail;
                       String subject = "${Config.appName} - feedback";
                       const String body = '';
-                      final url =
-                          'mailto:$recipientEmail?subject=$subject&body=$body';
+                      final url = 'mailto:$recipientEmail?subject=$subject&body=$body';
                       Utils.launchURL(
                         Uri.parse(url),
                         mode: LaunchMode.externalApplication,
                         onLaunchFail: () {
-                          Clipboard.setData(
-                              ClipboardData(text: recipientEmail));
+                          Clipboard.setData(ClipboardData(text: recipientEmail));
                           EasyLoading.showToast(
                             'Email address has been copied',
                             dismissOnTap: true,
@@ -227,8 +221,7 @@ class _SettingPageState extends State<SettingPage> with WidgetsBindingObserver {
                       'Debug: Clear Storage',
                       () {
                         ChatGPT.storage.erase();
-                        final store =
-                            Provider.of<AIChatStore>(context, listen: false);
+                        final store = Provider.of<AIChatStore>(context, listen: false);
                         store.syncStorage();
                         SpUtil.clear();
                         EasyLoading.showToast('Clear Storage Success!');
@@ -258,8 +251,7 @@ class _SettingPageState extends State<SettingPage> with WidgetsBindingObserver {
       child: Column(
         children: [
           Container(
-            padding:
-                const EdgeInsets.only(left: 20, right: 20, top: 18, bottom: 10),
+            padding: const EdgeInsets.only(left: 20, right: 20, top: 18, bottom: 10),
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border.all(width: 1, color: Colors.white),
@@ -294,10 +286,7 @@ class _SettingPageState extends State<SettingPage> with WidgetsBindingObserver {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600),
+                    style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
                 if (rightIconSrc != '')
@@ -338,8 +327,7 @@ class _SettingPageState extends State<SettingPage> with WidgetsBindingObserver {
               TextField(
                 controller: _keyTextEditingController,
                 autofocus: true,
-                decoration:
-                    const InputDecoration(hintText: 'Please input your key'),
+                decoration: const InputDecoration(hintText: 'Please input your key'),
               ),
               const SizedBox(height: 12),
               GestureDetector(
@@ -359,9 +347,9 @@ class _SettingPageState extends State<SettingPage> with WidgetsBindingObserver {
                   );
                   isCopying = false;
                 },
-                child: const SingleChildScrollView(
+                child: SingleChildScrollView(
                   child: Wrap(
-                    children: [
+                    children: const [
                       Text(
                         '* Custom key can use the APP without restrictions.',
                         textAlign: TextAlign.start,
@@ -462,12 +450,11 @@ class _SettingPageState extends State<SettingPage> with WidgetsBindingObserver {
               TextField(
                 controller: _urlTextEditingController,
                 autofocus: true,
-                decoration: const InputDecoration(
-                    hintText: 'Please input your OpenAI host'),
+                decoration: const InputDecoration(hintText: 'Please input your OpenAI host'),
               ),
               const SizedBox(height: 12),
-              const Wrap(
-                children: [
+              Wrap(
+                children: const [
                   Text(
                     "You can set openai host where access to the official OpenAI host is restricted or unavailable, "
                     "allowing you to configure an alternative host for the specific needs.\n"
@@ -475,14 +462,20 @@ class _SettingPageState extends State<SettingPage> with WidgetsBindingObserver {
                     textAlign: TextAlign.start,
                     softWrap: true,
                     style: TextStyle(
-                        fontSize: 14, height: 20 / 14, color: Colors.grey),
+                      fontSize: 14,
+                      height: 20 / 14,
+                      color: Colors.grey,
+                    ),
                   ),
                   Text(
                     "This option is only applied when you provide a custom apiKey.",
                     textAlign: TextAlign.start,
                     softWrap: true,
                     style: TextStyle(
-                        fontSize: 14, height: 20 / 14, color: Colors.red),
+                      fontSize: 14,
+                      height: 20 / 14,
+                      color: Colors.red,
+                    ),
                   ),
                 ],
               ),
@@ -499,8 +492,7 @@ class _SettingPageState extends State<SettingPage> with WidgetsBindingObserver {
             TextButton(
               child: const Text('Confirm'),
               onPressed: () async {
-                ChatGPT.setOpenAIBaseUrl(_urlTextEditingController.text)
-                    .then((_) {
+                ChatGPT.setOpenAIBaseUrl(_urlTextEditingController.text).then((_) {
                   _urlTextEditingController.clear();
                   Navigator.of(context).pop(true);
                   EasyLoading.showToast(
