@@ -447,7 +447,7 @@ class _ChatPageState extends State<ChatPage> {
                 data: '$defaultTextPrefix${message['content']}',
                 // data: 'This is a line\nThis is another line'.replaceAll('\n', '<br>'),
                 shrinkWrap: true,
-                selectable: false,
+                selectable: true,
                 styleSheet: MarkdownStyleSheet(
                   textScaleFactor: 1.1,
                   textAlign: WrapAlignment.start,
