@@ -1,4 +1,5 @@
-import 'package:dart_openai/openai.dart';
+
+import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_storage/get_storage.dart';
@@ -269,12 +270,28 @@ class ChatGPT {
     return "unknown";
   }
 
-  static convertListToModel(List messages) {
+  static List<OpenAIChatCompletionChoiceMessageModel> convertListToModel(List messages) {
     List<OpenAIChatCompletionChoiceMessageModel> modelMessages = [];
     for (var element in messages) {
+      if (element["role"] == null || element["content"] == null) {
+        throw ArgumentError("Element in messages is missing required fields: $element");
+      }
+      // Convertir el contenido a una lista de OpenAIChatCompletionChoiceMessageContentItemModel
+      List<OpenAIChatCompletionChoiceMessageContentItemModel> contentList = [];
+      if (element["content"] is String) {
+        contentList.add(OpenAIChatCompletionChoiceMessageContentItemModel.text(element["content"]));
+      } else if (element["content"] is List) {
+        for (var item in element["content"]) {
+          if (item is String) {
+            contentList.add(OpenAIChatCompletionChoiceMessageContentItemModel.text(item));
+          }
+          // Aquí puedes agregar más validaciones para otros tipos de contenido si es necesario
+        }
+      }
+      
       modelMessages.add(OpenAIChatCompletionChoiceMessageModel(
         role: getRoleFromString(element["role"]),
-        content: element["content"],
+        content: contentList, // Usar la lista de contenido aquí
       ));
     }
     return modelMessages;
@@ -314,7 +331,7 @@ class ChatGPT {
       model: model,
     );
     debugPrint('---text $text---');
-    String content = chatCompletion.choices.first.message.content ?? '';
+    String content = chatCompletion.choices.first.message.content!.first.text ?? '';
     bool hasRelation = content.toLowerCase().contains('true');
     debugPrint('---检查问题前后关联度 $hasRelation---');
     return hasRelation;

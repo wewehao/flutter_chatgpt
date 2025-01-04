@@ -3,37 +3,37 @@ description: aichat
 
 publish_to: "none"
 
-version: 1.0.0+2
+version: 1.0.0+3
 
 environment:
-  sdk: ">=2.18.6 <3.0.0"
+  sdk: ">=2.19.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.5
-  flutter_markdown: ^0.6.14
-  uuid: ^3.0.7
-  http: ^0.13.5
+  flutter_markdown: ^0.7.4+3
+  uuid: ^4.5.1
+  http: ^1.2.2 
   sp_util: ^2.0.3
-  shared_preferences: ^2.0.20
-  intl: ^0.18.0
-  dart_openai: ^1.9.1
-  get_storage: ^2.1.1
+  shared_preferences: ^2.1.0
+  intl: ^0.20.1
+  dart_openai: ^5.1.0 
+  get_storage: ^2.1.1 
   flutter_easyloading: ^3.0.5
-  url_launcher: ^6.1.10
-  share_plus: ^6.3.1
+  url_launcher: ^6.1.11
+  share_plus: ^10.1.3
   rating_dialog: ^2.0.4
-  lottie: ^2.3.1
-  provider: ^6.0.5
-  flutter_tts: ^3.6.3
+  lottie: ^3.3.0
+  provider: ^6.1.0
+  flutter_tts: ^4.2.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.1
-  build_runner: ^2.3.3
-  flutter_dotenv: ^5.0.2
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.0
+  flutter_dotenv: ^5.1.0
 
 flutter:
   uses-material-design: true
